@@ -13,7 +13,14 @@ const server = http.createServer((req, res) => {
       // application/json
     // Parse the body of the request as x-www-form-urlencoded if Content-Type
       // header is x-www-form-urlencoded
+
     if (reqBody) {
+
+      if(req.headers['content-type'] === "application/json"){
+        req.body = JSON.parse(reqBody)
+      }
+
+      if(req.headers['content-type'] === "x-www-form-urlencoded"){
       req.body = reqBody
         .split("&")
         .map((keyValuePair) => keyValuePair.split("="))
@@ -23,15 +30,22 @@ const server = http.createServer((req, res) => {
           acc[key] = value;
           return acc;
         }, {});
+      }
 
       // Log the body of the request to the terminal
       console.log(req.body);
     }
 
+
     const resBody = {
       "Hello": "World!"
     };
-
+    res.body = JSON.stringify(resBody);
+    res.statusCode = 200;
+    res.setHeader('Content-type', 'application/json');
+    res.write(res.body);
+    res.end();
+    return;
     // Return the `resBody` object as JSON in the body of the response
   });
 });
